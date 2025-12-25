@@ -2,13 +2,12 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import { FaTrashAlt } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 
 const ManageUser = () => {
   const { user: currentUser } = useAuth();
   const [searchText, setSearchText] = useState("");
-  const [filteredQueries, setFilteredQueries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const axiosSecure = useAxiosSecure();
@@ -24,6 +23,12 @@ const ManageUser = () => {
       return res.data;
     },
   });
+
+  const filteredQueries = users.filter(
+    (item) =>
+      item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.email?.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const handleUpdateRole = (user, newRole) => {
     if (user.email === currentUser?.email) {
@@ -71,20 +76,9 @@ const ManageUser = () => {
     });
   };
 
-  useEffect(() => {
-    const filtered = users.filter(
-      (item) =>
-        item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.email?.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredQueries(filtered);
-    setCurrentPage(1);
-  }, [users, searchText]);
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredQueries.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredQueries.length / itemsPerPage);
 
   if (isLoading)
     return (
@@ -101,7 +95,11 @@ const ManageUser = () => {
         </h2>
         <input
           type="text"
-          onChange={(e) => setSearchText(e.target.value)}
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setCurrentPage(1);
+          }}
           placeholder="Search by name or email..."
           className="input input-bordered w-full max-w-xs rounded-2xl shadow-sm"
         />

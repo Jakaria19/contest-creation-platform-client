@@ -4,10 +4,10 @@ import useAuth from "../hooks/useAuth";
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  const [isAdmin, isAdminLoading] = useRole();
+  const [role, isRoleLoading] = useRole();
   const location = useLocation();
 
-  if (loading || isAdminLoading) {
+  if (loading || isRoleLoading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <span className="loading loading-bars loading-lg text-secondary"></span>
@@ -15,7 +15,7 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (user && isAdmin) {
+  if (user && role === "admin") {
     return children;
   }
 

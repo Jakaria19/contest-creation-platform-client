@@ -6,7 +6,7 @@ const useRole = () => {
   const { user, loading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const { data: role = null, isPending: isRoleLoading } = useQuery({
+  const { data: role = null, isLoading: isRoleLoading } = useQuery({
     queryKey: [user?.email, "userRole"],
     enabled: !loading && !!user?.email,
     queryFn: async () => {

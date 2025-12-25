@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
-import { FaTrashAlt, FaShieldAlt } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 
@@ -94,16 +94,16 @@ const ManageUser = () => {
     );
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-slate-50 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <h2 className="text-3xl font-black uppercase">
+        <h2 className="text-3xl font-black uppercase tracking-tighter">
           User <span className="text-primary">Management</span>
         </h2>
         <input
           type="text"
           onChange={(e) => setSearchText(e.target.value)}
-          placeholder="Search users..."
-          className="input input-bordered w-full max-w-xs rounded-2xl"
+          placeholder="Search by name or email..."
+          className="input input-bordered w-full max-w-xs rounded-2xl shadow-sm"
         />
       </div>
 
@@ -111,31 +111,42 @@ const ManageUser = () => {
         <table className="table w-full">
           <thead className="bg-gray-50 uppercase text-xs">
             <tr>
-              <th className="pl-8">User</th>
+              <th className="pl-8 py-5">User Info</th>
               <th>Current Role</th>
-              <th>Action</th>
-              <th className="text-center pr-8">Delete</th>
+              <th>Change Role</th>
+              <th className="text-center pr-8">Actions</th>
             </tr>
           </thead>
           <tbody>
             {currentUsers.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                <td className="pl-8">
+              <tr
+                key={user._id}
+                className="hover:bg-gray-50 transition-colors border-b border-gray-50"
+              >
+                <td className="pl-8 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="avatar mask mask-squircle w-10 h-10">
+                    <div className="avatar mask mask-squircle w-12 h-12 border-2 border-primary/10">
                       <img
                         src={user.photo || "https://i.ibb.co/mJR7z9Y/user.png"}
-                        alt=""
+                        alt="user"
                       />
                     </div>
                     <div>
-                      <div className="font-bold">{user.name}</div>
+                      <div className="font-bold text-neutral">{user.name}</div>
                       <div className="text-xs opacity-50">{user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <span className="badge badge-ghost font-bold">
+                  <span
+                    className={`badge font-bold p-3 ${
+                      user.role === "admin"
+                        ? "badge-primary"
+                        : user.role === "creator"
+                        ? "badge-secondary"
+                        : "badge-ghost"
+                    }`}
+                  >
                     {user.role || "user"}
                   </span>
                 </td>
@@ -143,7 +154,7 @@ const ManageUser = () => {
                   <select
                     value={user.role || "user"}
                     onChange={(e) => handleUpdateRole(user, e.target.value)}
-                    className="select select-bordered select-sm rounded-lg"
+                    className="select select-bordered select-sm rounded-lg focus:outline-primary"
                   >
                     <option value="user">User</option>
                     <option value="creator">Creator</option>
@@ -153,9 +164,9 @@ const ManageUser = () => {
                 <td className="text-center pr-8">
                   <button
                     onClick={() => handleDeleteUser(user)}
-                    className="text-error hover:scale-110 transition-transform"
+                    className="btn btn-ghost btn-sm text-error hover:bg-error/10 rounded-full"
                   >
-                    <FaTrashAlt />
+                    <FaTrashAlt size={16} />
                   </button>
                 </td>
               </tr>
@@ -163,25 +174,6 @@ const ManageUser = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-8">
-          <div className="join border border-gray-200">
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`join-item btn btn-sm ${
-                  currentPage === i + 1 ? "btn-primary" : "bg-white"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

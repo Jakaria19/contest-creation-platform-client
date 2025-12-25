@@ -17,6 +17,15 @@ const Login = () => {
   const axiosPublic = useAxiosPublic();
   const from = location.state?.from?.pathname || "/";
 
+  const handleJwtAndNavigate = (email, destination) => {
+    axiosPublic.post("/jwt", { email }).then((res) => {
+      if (res.data.token) {
+        localStorage.setItem("access-token", res.data.token);
+        navigate(destination, { replace: true });
+      }
+    });
+  };
+
   const onSubmit = (data) => {
     signIn(data.email, data.password)
       .then(() => {
@@ -26,7 +35,7 @@ const Login = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate(from, { replace: true });
+        handleJwtAndNavigate(data.email, from);
       })
       .catch(() => {
         Swal.fire({
@@ -47,7 +56,7 @@ const Login = () => {
         winCount: 0,
       };
       axiosPublic.post("/users", userInfo).then(() => {
-        navigate(from, { replace: true });
+        handleJwtAndNavigate(result.user?.email, from);
       });
     });
   };
@@ -61,19 +70,11 @@ const Login = () => {
             Login to your dashboard to manage contests, track rewards and
             explore new opportunities.
           </p>
-          <div className="mt-10 animate-pulse">
-            <div className="w-24 h-24 border-4 border-white/20 rounded-full flex items-center justify-center text-5xl">
-              🏆
-            </div>
-          </div>
         </div>
-
         <div className="md:w-1/2 p-10 md:p-16">
           <div className="mb-10 text-center md:text-left">
             <h3 className="text-3xl font-black text-neutral">Sign In</h3>
-            <p className="text-gray-400 mt-2">Access your champion account</p>
           </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="form-control">
               <label className="label-text font-bold text-gray-600 mb-2">
@@ -101,18 +102,15 @@ const Login = () => {
               Sign In Now
             </button>
           </form>
-
-          <div className="divider my-10 text-gray-300 font-bold text-xs uppercase tracking-widest">
+          <div className="divider my-10 text-gray-300 font-bold text-xs uppercase">
             Or Continue With
           </div>
-
           <button
             onClick={handleGoogleSignIn}
-            className="btn btn-outline btn-block h-14 rounded-2xl gap-3 border-gray-200 hover:bg-slate-50 hover:text-neutral"
+            className="btn btn-outline btn-block h-14 rounded-2xl gap-3 border-gray-200"
           >
             <FaGoogle className="text-red-500 text-xl" /> Google Account
           </button>
-
           <p className="text-center mt-10 text-gray-500">
             New here?{" "}
             <Link

@@ -16,6 +16,15 @@ const SignUp = () => {
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
 
+  const handleJwtAndNavigate = (email) => {
+    axiosPublic.post("/jwt", { email }).then((res) => {
+      if (res.data.token) {
+        localStorage.setItem("access-token", res.data.token);
+        navigate("/");
+      }
+    });
+  };
+
   const onSubmit = (data) => {
     createUser(data.email, data.password)
       .then(() => {
@@ -34,7 +43,7 @@ const SignUp = () => {
               title: "Registered!",
               text: "Welcome to the community",
             });
-            navigate("/");
+            handleJwtAndNavigate(data.email);
           });
         });
       })
@@ -52,7 +61,9 @@ const SignUp = () => {
         role: "user",
         winCount: 0,
       };
-      axiosPublic.post("/users", userInfo).then(() => navigate("/"));
+      axiosPublic.post("/users", userInfo).then(() => {
+        handleJwtAndNavigate(result.user?.email);
+      });
     });
   };
 
@@ -64,25 +75,9 @@ const SignUp = () => {
             Start Winning!
           </h2>
           <p className="text-center text-blue-100 text-lg opacity-80 mb-10 leading-relaxed">
-            Create an account today and join thousands of creators worldwide in
-            epic challenges.
+            Create an account today and join thousands of creators worldwide.
           </p>
-          <div className="grid grid-cols-2 gap-4 w-full max-w-sm text-sm">
-            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
-              🏆 500+ Contests
-            </div>
-            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
-              💰 Big Prizes
-            </div>
-            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
-              🤝 Expert Jury
-            </div>
-            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
-              🛡️ Secure Payments
-            </div>
-          </div>
         </div>
-
         <div className="md:w-1/2 p-10 md:p-16">
           <h3 className="text-3xl font-black text-neutral mb-8">
             Join ContestHub
@@ -95,7 +90,7 @@ const SignUp = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("name", { required: "Name is required" })}
+                  {...register("name", { required: true })}
                   className="input input-bordered bg-slate-50 border-none"
                 />
               </div>
@@ -105,7 +100,7 @@ const SignUp = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("photoURL", { required: "Photo is required" })}
+                  {...register("photoURL", { required: true })}
                   className="input input-bordered bg-slate-50 border-none"
                 />
               </div>
@@ -116,7 +111,7 @@ const SignUp = () => {
               </label>
               <input
                 type="email"
-                {...register("email", { required: "Email is required" })}
+                {...register("email", { required: true })}
                 className="input input-bordered bg-slate-50 border-none"
               />
             </div>
@@ -126,28 +121,15 @@ const SignUp = () => {
               </label>
               <input
                 type="password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Min 6 chars" },
-                  pattern: {
-                    value: /(?=.*[A-Z])(?=.*[!@#$&*])/,
-                    message: "Must include Uppercase and Special char",
-                  },
-                })}
+                {...register("password", { required: true, minLength: 6 })}
                 className="input input-bordered bg-slate-50 border-none"
               />
-              {errors.password && (
-                <span className="text-red-500 text-xs mt-1 font-bold">
-                  {errors.password.message}
-                </span>
-              )}
             </div>
             <button className="btn btn-primary btn-block text-white h-14 mt-4 rounded-2xl">
               Create Account
             </button>
           </form>
-
-          <div className="divider my-8 uppercase text-[10px] font-black text-gray-400 tracking-[0.2em]">
+          <div className="divider my-8 uppercase text-[10px] font-black text-gray-400">
             Quick Access
           </div>
           <button
@@ -156,12 +138,6 @@ const SignUp = () => {
           >
             <FaGoogle className="text-red-500" /> Sign up with Google
           </button>
-          <p className="text-center mt-8 text-gray-500">
-            Already a member?{" "}
-            <Link to="/login" className="text-primary font-black">
-              Login Here
-            </Link>
-          </p>
         </div>
       </div>
     </div>

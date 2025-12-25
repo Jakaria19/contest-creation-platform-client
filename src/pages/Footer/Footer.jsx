@@ -1,64 +1,70 @@
-import { FaFacebook, FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
-// ! import logo from "../../../public/logo.png";
+import { FaFacebook, FaLinkedin, FaGithub, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <div className="">
-      <footer className="footer p-10 bg-[#d2e3fd] text-base-content">
-        <nav className="">
-          <div className="flex items-center">
-            <img src={logo} alt="" className="w-[60px] h-[50px]" />
-            <h6 className="text-2xl text-[#118acb] font-bold">Contest Lab</h6>
+    <footer className="bg-neutral text-neutral-content rounded-t-[3rem] p-10 mt-20">
+      <div className="footer max-w-7xl mx-auto py-10">
+        <aside className="max-w-xs">
+          <h2 className="text-3xl font-black tracking-tighter text-white mb-4">
+            CONTEST<span className="text-primary">HUB</span>
+          </h2>
+          <p className="opacity-70 leading-relaxed text-sm">
+            Inspiring creators since 2024. Level up your skills by participating
+            in global challenges and showcasing your talent.
+          </p>
+          <div className="flex gap-5 mt-6">
+            {[FaFacebook, FaLinkedin, FaGithub, FaTwitter].map((Icon, idx) => (
+              <a
+                key={idx}
+                href="#"
+                className="text-2xl hover:text-primary transition-all hover:-translate-y-1"
+              >
+                <Icon />
+              </a>
+            ))}
           </div>
-          <p className="mb-2 ml-6">Contest Lab Industries Ltd.</p>
-          <div className="flex gap-5 items-center ml-6">
-            <p className="text-2xl">
-              <FaFacebook />
-            </p>
-            <p className="text-2xl">
-              <FaGithub />
-            </p>
-            <p className="text-2xl">
-              <FaTwitter />
-            </p>
-            <p className="text-2xl">
-              <FaLinkedin />
-            </p>
-          </div>
-        </nav>
+        </aside>
+
         <nav>
-          <h6 className="text-[#118acb] font-bold">Services</h6>
-          <a className="link link-hover">Branding</a>
-          <a className="link link-hover">Design</a>
-          <a className="link link-hover">Marketing</a>
-          <a className="link link-hover">Advertisement</a>
+          <h6 className="footer-title opacity-100 text-white border-b border-primary/30 pb-2 mb-4">
+            Quick Links
+          </h6>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            All Contests
+          </a>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            Success Stories
+          </a>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            Newsletter
+          </a>
         </nav>
+
         <nav>
-          <h6 className="text-[#118acb] font-bold">Legal</h6>
-          <a className="link link-hover">Terms of use</a>
-          <a className="link link-hover">Privacy policy</a>
-          <a className="link link-hover">Cookie policy</a>
+          <h6 className="footer-title opacity-100 text-white border-b border-primary/30 pb-2 mb-4">
+            Legal
+          </h6>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            Terms of use
+          </a>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            Privacy policy
+          </a>
+          <a className="link link-hover opacity-70 hover:opacity-100 transition-opacity mb-2 block text-sm">
+            Cookie policy
+          </a>
         </nav>
-        <form>
-          <h6 className="text-[#118acb] font-bold">Newsletter</h6>
-          <fieldset className="form-control w-80">
-            <label className="label">
-              <span className="label-text">Enter your email address</span>
-            </label>
-            <div className="join">
-              <input
-                type="text"
-                placeholder="username@site.com"
-                className="input input-bordered w-1/2 md:w-full join-item"
-              />
-              <button className="btn bg-[#118acb] text-white join-item">
-                Subscribe
-              </button>
-            </div>
-          </fieldset>
-        </form>
-      </footer>
-    </div>
+      </div>
+
+      <div className="footer footer-center p-6 border-t border-gray-800 mt-10 max-w-7xl mx-auto">
+        <aside>
+          <p className="opacity-50 text-xs">
+            Copyright © 2025 - All right reserved by{" "}
+            <span className="font-bold text-primary">ContestHub</span>
+          </p>
+        </aside>
+      </div>
+    </footer>
   );
 };
 

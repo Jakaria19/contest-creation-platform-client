@@ -1,239 +1,167 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import "animate.css";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { FaGoogle } from "react-icons/fa";
-import {
-  loadCaptchaEnginge,
-  LoadCanvasTemplate,
-  validateCaptcha,
-} from "react-simple-captcha";
-import { useEffect, useState } from "react";
 
 const SignUp = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
   const { createUser, updateUserProfile, googleSignIn } = useAuth();
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
 
-  const [disabled, setDisable] = useState(true);
-
-  useEffect(() => {
-    loadCaptchaEnginge(4);
-  }, []);
-
-  const handleValidateCaptcha = (e) => {
-    const user_captcha_value = e.target.value;
-    if (validateCaptcha(user_captcha_value)) {
-      setDisable(false);
-    } else {
-      setDisable(true);
-    }
-  };
-
   const onSubmit = (data) => {
-    console.log(data);
-
-    createUser(data.email, data.password).then((result) => {
-      const loggedUser = result.user;
-      console.log(loggedUser);
-
-      updateUserProfile(data.name, data.photoURL)
-        .then(() => {
-          // create user entry in the database
+    createUser(data.email, data.password)
+      .then(() => {
+        updateUserProfile(data.name, data.photoURL).then(() => {
           const userInfo = {
             name: data.name,
-            photo: data.photoURL,
             email: data.email,
+            photo: data.photoURL,
+            role: "user",
+            winCount: 0,
           };
-          axiosPublic.post("/users", userInfo).then((res) => {
-            if (res.data.insertedId) {
-              console.log("user added to the database");
-              // reset();
-              Swal.fire({
-                title: "User Login Successfully",
-                showClass: {
-                  popup: `
-                                                animate__animated
-                                                animate__fadeInUp
-                                                animate__faster
-                                            `,
-                },
-                hideClass: {
-                  popup: `
-                                                animate__animated
-                                                animate__fadeOutDown
-                                                animate__faster
-                                            `,
-                },
-              });
-              navigate("/");
-            }
+          axiosPublic.post("/users", userInfo).then(() => {
+            reset();
+            Swal.fire({
+              icon: "success",
+              title: "Registered!",
+              text: "Welcome to the community",
+            });
+            navigate("/");
           });
-        })
-        .catch((error) => console.log(error));
-    });
+        });
+      })
+      .catch((err) =>
+        Swal.fire({ icon: "error", title: "Error", text: err.message })
+      );
   };
 
   const handleGoogleSignIn = () => {
     googleSignIn().then((result) => {
-      console.log(result.user);
       const userInfo = {
         email: result.user?.email,
         name: result.user?.displayName,
         photo: result.user?.photoURL,
+        role: "user",
+        winCount: 0,
       };
-      axiosPublic.post("/users", userInfo).then((res) => {
-        console.log(res.data);
-        navigate("/");
-      });
+      axiosPublic.post("/users", userInfo).then(() => navigate("/"));
     });
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="hero min-h-screen">
-        <div className="hero-content flex-col lg:flex-row">
-          <div className="text-center lg:text-left">
-            <h1 className="text-5xl font-bold mb-3">Sign Up now!</h1>
-            <img
-              className="h-[400px] w-full"
-              src={
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKNTAw8fDzDbpdMNrvA2LgSyfQ5F2mek9xCk9QZ-1oisDeTecRPaI3VKnZU8lDrxCqMC8&usqp=CAU"
-              }
-              alt=""
-            />
-          </div>
-          <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <form onSubmit={handleSubmit(onSubmit)} className="card-body">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Name</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("name", { required: true })}
-                  name="name"
-                  placeholder="name"
-                  className="input input-bordered"
-                  required
-                />
-                {errors.name && (
-                  <span className="text-red-600">Name is required</span>
-                )}
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Photo URL</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("photoURL", { required: true })}
-                  placeholder="Photo URL"
-                  name="photoURL"
-                  className="input input-bordered"
-                  required
-                />
-                {errors.photoURL && (
-                  <span className="text-red-600">Photo URL is required</span>
-                )}
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  {...register("email", { required: true })}
-                  name="email"
-                  placeholder="email"
-                  className="input input-bordered"
-                  required
-                />
-                {errors.name && (
-                  <span className="text-red-600">Email is required</span>
-                )}
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <input
-                  type="password"
-                  {...register("password", {
-                    required: true,
-                    minLength: 6,
-                    maxLength: 20,
-                    pattern: /(?=.*[A-Z])(?=.*[!@#$&_*])(?=.*[0-9])(?=.*[a-z])/,
-                  })}
-                  name="password"
-                  placeholder="password"
-                  className="input input-bordered"
-                  required
-                />
-                {errors.password?.type === "required" && (
-                  <p className="text-red-600">Password is required</p>
-                )}
-                {errors.password?.type === "minLength" && (
-                  <p className="text-red-600">Password must be 6 characters</p>
-                )}
-                {errors.password?.type === "maxLength" && (
-                  <p className="text-red-600">
-                    Password must be less than 20 characters
-                  </p>
-                )}
-                {errors.password?.type === "pattern" && (
-                  <p className="text-red-600">
-                    Password must have one upper case, one lower case, one
-                    number and one special characters
-                  </p>
-                )}
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <LoadCanvasTemplate />
-                </label>
-                <input
-                  type="text"
-                  onBlur={handleValidateCaptcha}
-                  name="captcha"
-                  placeholder="type the captcha above"
-                  className="input input-bordered"
-                  required
-                />
-              </div>
-              <div className="form-control mt-6">
-                <input
-                  disabled={disabled}
-                  className="btn bg-[#118acb] text-white"
-                  type="submit"
-                  value="Sign Up"
-                />
-              </div>
-            </form>
-            <div className="w-full px-7">
-              <button
-                onClick={handleGoogleSignIn}
-                className="btn bg-[#118acb] w-full text-white"
-              >
-                Login with Google <FaGoogle />
-              </button>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-16 px-4">
+      <div className="max-w-6xl w-full bg-white shadow-2xl rounded-[3rem] overflow-hidden flex flex-col md:flex-row-reverse border border-gray-100">
+        <div className="md:w-1/2 bg-primary p-12 text-white flex flex-col justify-center items-center">
+          <h2 className="text-5xl font-black mb-6 text-center">
+            Start Winning!
+          </h2>
+          <p className="text-center text-blue-100 text-lg opacity-80 mb-10 leading-relaxed">
+            Create an account today and join thousands of creators worldwide in
+            epic challenges.
+          </p>
+          <div className="grid grid-cols-2 gap-4 w-full max-w-sm text-sm">
+            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+              🏆 500+ Contests
             </div>
-            <p className="text-center mb-6">
-              <small>
-                Already Have an Account?{" "}
-                <Link to="/login" className="text-sky-600 underline">
-                  Please Login
-                </Link>
-              </small>
-            </p>
+            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+              💰 Big Prizes
+            </div>
+            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+              🤝 Expert Jury
+            </div>
+            <div className="bg-white/10 p-4 rounded-2xl border border-white/20">
+              🛡️ Secure Payments
+            </div>
           </div>
+        </div>
+
+        <div className="md:w-1/2 p-10 md:p-16">
+          <h3 className="text-3xl font-black text-neutral mb-8">
+            Join ContestHub
+          </h3>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label-text font-bold text-gray-600 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  {...register("name", { required: "Name is required" })}
+                  className="input input-bordered bg-slate-50 border-none"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label-text font-bold text-gray-600 mb-1">
+                  Photo URL
+                </label>
+                <input
+                  type="text"
+                  {...register("photoURL", { required: "Photo is required" })}
+                  className="input input-bordered bg-slate-50 border-none"
+                />
+              </div>
+            </div>
+            <div className="form-control">
+              <label className="label-text font-bold text-gray-600 mb-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                {...register("email", { required: "Email is required" })}
+                className="input input-bordered bg-slate-50 border-none"
+              />
+            </div>
+            <div className="form-control">
+              <label className="label-text font-bold text-gray-600 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Min 6 chars" },
+                  pattern: {
+                    value: /(?=.*[A-Z])(?=.*[!@#$&*])/,
+                    message: "Must include Uppercase and Special char",
+                  },
+                })}
+                className="input input-bordered bg-slate-50 border-none"
+              />
+              {errors.password && (
+                <span className="text-red-500 text-xs mt-1 font-bold">
+                  {errors.password.message}
+                </span>
+              )}
+            </div>
+            <button className="btn btn-primary btn-block text-white h-14 mt-4 rounded-2xl">
+              Create Account
+            </button>
+          </form>
+
+          <div className="divider my-8 uppercase text-[10px] font-black text-gray-400 tracking-[0.2em]">
+            Quick Access
+          </div>
+          <button
+            onClick={handleGoogleSignIn}
+            className="btn btn-outline btn-block h-14 rounded-2xl gap-3 border-gray-200"
+          >
+            <FaGoogle className="text-red-500" /> Sign up with Google
+          </button>
+          <p className="text-center mt-8 text-gray-500">
+            Already a member?{" "}
+            <Link to="/login" className="text-primary font-black">
+              Login Here
+            </Link>
+          </p>
         </div>
       </div>
     </div>

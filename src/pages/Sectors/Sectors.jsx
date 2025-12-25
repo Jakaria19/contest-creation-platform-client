@@ -1,130 +1,78 @@
 const Sectors = () => {
-  return (
-    <div className="bg-slate-100">
-      <h2 className="text-4xl font-extrabold pt-8 text-center">Sectors</h2>
-      <h4 className="text-2xl font-extrabold my-6 text-center text-[#1bc5bd]">
-        Gamification to change the world for every sector
-      </h4>
+  const sectorData = [
+    {
+      title: "MARKETING",
+      img: "https://static.drimify.com/wp-content/uploads/2020/09/marketing-games-scaled-800x500.jpg",
+      desc: "Create engagement and convert customers using gamification in your marketing strategy.",
+    },
+    {
+      title: "EVENTS",
+      img: "https://static.drimify.com/wp-content/uploads/2020/09/connect-event-e1600951815886-800x500.jpg",
+      desc: "Engage your audience by adding gamification to your events and create memorable experiences.",
+    },
+    {
+      title: "ENTERTAINMENT",
+      img: "https://static.drimify.com/wp-content/uploads/2020/09/entertainment-games-scaled-800x500.jpg",
+      desc: "Engage, qualify, and reward your audience. Use gamified entertainment to stand out.",
+    },
+    {
+      title: "TRAINING",
+      img: "https://static.drimify.com/wp-content/uploads/2023/01/shutterstock2136489279-scaled-e1674488959898-800x500.jpg",
+      desc: "Boost learning retention and engagement with gamified corporate training modules.",
+    },
+    {
+      title: "HUMAN RESOURCES",
+      img: "https://static.drimify.com/wp-content/uploads/2020/09/human-resources-games-scaled-800x500.jpg",
+      desc: "Employ gamification across HR for engaging team building and recruitment processes.",
+    },
+    {
+      title: "NONPROFIT",
+      img: "https://static.drimify.com/wp-content/uploads/2020/09/non-profit-games-scaled-800x500.jpg",
+      desc: "Raise awareness and action change using gamification for social and charitable causes.",
+    },
+  ];
 
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 md:p-10">
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2020/09/marketing-games-scaled-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">MARKETING</h2>
-              <p>
-                Create engagement and convert customers using gamification in
-                your…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2020/09/connect-event-e1600951815886-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">EVENTS</h2>
-              <p>
-                Engage your audience by adding gamification to your events.…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2020/09/entertainment-games-scaled-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">ENTERTAINMENT</h2>
-              <p>
-                Engage, qualify, and reward your audience. Use gamified
-                entertainment…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 md:p-10">
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2023/01/shutterstock2136489279-scaled-e1674488959898-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">TRAINING</h2>
-              <p>
-                Create engagement and convert customers using gamification in
-                your…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2020/09/human-resources-games-scaled-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">HUMAN RESOURCES</h2>
-              <p>
-                Employ gamification across HR for engaging team building and…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-          <div className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src="https://static.drimify.com/wp-content/uploads/2020/09/non-profit-games-scaled-800x500.jpg?220823"
-                alt="Shoes"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title font-extrabold">NONPROFIT</h2>
-              <p>
-                Raise awareness and action change using gamification. Create
-                interactive…
-              </p>
-              <div className="card-actions justify-start mt-4">
-                <p className="text-[#1bc5bd]">Discover the sectors</p>
-              </div>
-            </div>
-          </div>
-          {/*  */}
-        </div>
+  return (
+    <section className="bg-slate-50 py-20 px-5">
+      <div className="max-w-7xl mx-auto text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-black text-neutral uppercase tracking-tighter mb-4">
+          Sectors
+        </h2>
+        <h4 className="text-xl md:text-2xl font-bold text-[#1bc5bd]">
+          Gamification to change the world for every sector
+        </h4>
       </div>
-    </div>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {sectorData.map((sector, index) => (
+          <div
+            key={index}
+            className="group card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 rounded-[2rem] overflow-hidden border border-gray-100"
+          >
+            <figure className="overflow-hidden">
+              <img
+                src={sector.img}
+                alt={sector.title}
+                className="group-hover:scale-110 transition-transform duration-500 h-60 w-full object-cover"
+              />
+            </figure>
+            <div className="card-body p-8">
+              <h2 className="card-title font-black text-neutral mb-2">
+                {sector.title}
+              </h2>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                {sector.desc}
+              </p>
+              <div className="card-actions mt-6">
+                <button className="text-[#1bc5bd] font-bold text-sm uppercase tracking-widest hover:underline transition-all">
+                  Discover the sectors →
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 

@@ -27,52 +27,34 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main></Main>,
-    errorElement: <ErrorPage></ErrorPage>,
+    element: <Main />,
+    errorElement: <ErrorPage />,
     children: [
+      { path: "/", element: <Home /> },
+      { path: "login", element: <Login /> },
+      { path: "signUp", element: <SignUp /> },
+      { path: "allContest", element: <AllContest /> },
+      { path: "sectors", element: <Sectors /> },
+      { path: "services", element: <Service /> },
       {
-        path: "/",
-        element: <Home></Home>,
-      },
-      {
-        path: "/login",
-        element: <Login></Login>,
-      },
-      {
-        path: "/signUp",
-        element: <SignUp></SignUp>,
-      },
-      {
-        path: "allContest",
-        element: <AllContest></AllContest>,
-      },
-      {
-        path: "/contestDetails/:id",
+        path: "contestDetails/:id",
         element: (
           <PrivateRoute>
-            <ContestDetails></ContestDetails>
+            <ContestDetails />
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://contest-lab-server.vercel.app/contest/${params.id}`),
+          fetch(`${import.meta.env.VITE_API_URL}/contest/${params.id}`),
       },
       {
-        path: "/payment/:id",
+        path: "payment/:id",
         element: (
           <PrivateRoute>
-            <Payment></Payment>
+            <Payment />
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`https://contest-lab-server.vercel.app/contest/${params.id}`),
-      },
-      {
-        path: "/sectors",
-        element: <Sectors></Sectors>,
-      },
-      {
-        path: "/services",
-        element: <Service></Service>,
+          fetch(`${import.meta.env.VITE_API_URL}/contest/${params.id}`),
       },
     ],
   },
@@ -80,46 +62,42 @@ export const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <PrivateRoute>
-        <DashBoard></DashBoard>
+        <DashBoard />
       </PrivateRoute>
     ),
     children: [
-      {
-        path: "addContest",
-        element: (
-          <PrivateRoute>
-            <AddContest></AddContest>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "createdContest",
-        element: <CreateContest></CreateContest>,
-      },
+      { path: "myProfile", element: <MyProfile /> },
+      { path: "addContest", element: <AddContest /> },
+      { path: "createdContest", element: <CreateContest /> },
       {
         path: "createdContest/update/:id",
-        element: (
-          <PrivateRoute>
-            <Update></Update>
-          </PrivateRoute>
-        ),
+        element: <Update />,
         loader: ({ params }) =>
-          fetch(`https://contest-lab-server.vercel.app/contest/${params.id}`),
+          fetch(`${import.meta.env.VITE_API_URL}/contest/${params.id}`),
+      },
+      { path: "contestSubmitted", element: <ContestSubmitted /> },
+      { path: "participatedContest", element: <MyParticipation /> },
+      {
+        path: "participatedContest/submit/:id",
+        element: <SubmitContests />,
+        loader: ({ params }) =>
+          fetch(`${import.meta.env.VITE_API_URL}/paymentSingle/${params.id}`),
       },
       {
-        path: "contestSubmitted",
-        element: (
-          <PrivateRoute>
-            <ContestSubmitted></ContestSubmitted>
-          </PrivateRoute>
-        ),
+        path: "contestSubmitted/showSubmission/:contestId",
+        element: <ShowSubmission />,
+        loader: ({ params }) =>
+          fetch(
+            `${import.meta.env.VITE_API_URL}/paymentSubmit/${params.contestId}`
+          ),
       },
-      //admin
+      { path: "winningContest", element: <WinningContest /> },
+
       {
         path: "manageUser",
         element: (
           <AdminRoute>
-            <ManegeUser></ManegeUser>
+            <ManegeUser />
           </AdminRoute>
         ),
       },
@@ -127,57 +105,8 @@ export const router = createBrowserRouter([
         path: "manageContest",
         element: (
           <AdminRoute>
-            <ManageContest></ManageContest>
+            <ManageContest />
           </AdminRoute>
-        ),
-      },
-      //user
-      {
-        path: "myProfile",
-        element: (
-          <PrivateRoute>
-            <MyProfile></MyProfile>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "participatedContest",
-        element: (
-          <PrivateRoute>
-            <MyParticipation></MyParticipation>
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "participatedContest/submit/:id",
-        element: (
-          <PrivateRoute>
-            <SubmitContests></SubmitContests>
-          </PrivateRoute>
-        ),
-        loader: ({ params }) =>
-          fetch(
-            `https://contest-lab-server.vercel.app/paymentSingle/${params.id}`
-          ),
-      },
-      {
-        path: "contestSubmitted/showSubmission/:contestId",
-        element: (
-          <PrivateRoute>
-            <ShowSubmission></ShowSubmission>
-          </PrivateRoute>
-        ),
-        loader: ({ params }) =>
-          fetch(
-            `https://contest-lab-server.vercel.app/paymentSubmit/${params.contestId}`
-          ),
-      },
-      {
-        path: "winningContest",
-        element: (
-          <PrivateRoute>
-            <WinningContest></WinningContest>
-          </PrivateRoute>
         ),
       },
     ],

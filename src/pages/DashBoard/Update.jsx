@@ -1,210 +1,209 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
-import { FaRegCalendarAlt } from "react-icons/fa";
+import { FaRegCalendarAlt, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
-import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Update = () => {
   const contest = useLoaderData();
-  const [startDate, setStartDate] = useState(null);
-  const axiosPublic = useAxiosPublic();
-  console.log(contest);
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
+
+  const [startDate, setStartDate] = useState(
+    contest?.contestDeadLine ? new Date(contest.contestDeadLine) : new Date()
+  );
 
   const handleUpdateContest = async (event) => {
     event.preventDefault();
-
     const form = event.target;
-    const contestName = form.contestName.value;
-    const contestImage = form.contestImage.value;
-    const contestPrice = parseInt(form.contestPrice.value);
-    const priceMoney = parseInt(form.priceMoney.value);
-    const taskInstruction = form.taskInstruction.value;
-    const contestType = form.contestType.value;
-    const contestDescription = form.contestDescription.value;
-    const contestDeadLine = form.contestDeadLine.value;
 
-    const newContest = {
-      contestName,
-      contestImage,
-      contestPrice,
-      priceMoney,
-      taskInstruction,
-      contestType,
-      contestDescription,
-      contestDeadLine,
+    const updatedContest = {
+      contestName: form.contestName.value,
+      contestImage: form.contestImage.value,
+      contestPrice: parseInt(form.contestPrice.value),
+      priceMoney: parseInt(form.priceMoney.value),
+      taskInstruction: form.taskInstruction.value,
+      contestType: form.contestType.value,
+      contestDescription: form.contestDescription.value,
+      contestDeadLine: startDate,
     };
-    console.log(newContest);
 
-    const menuRes = await axiosPublic.patch(
-      `/contest/${contest._id}`,
-      newContest
-    );
-    console.log(menuRes.data);
-    if (menuRes.data.modifiedCount > 0) {
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Contest Updated Successfully",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+    try {
+      const res = await axiosSecure.patch(
+        `/contest/${contest._id}`,
+        updatedContest
+      );
+
+      if (res.data.modifiedCount > 0) {
+        Swal.fire({
+          icon: "success",
+          title: "Update Successful",
+          text: `${updatedContest.contestName} has been updated.`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/dashboard/my-contests");
+      } else {
+        Swal.fire("No Changes", "You didn't change any information.", "info");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Something went wrong while updating.", "error");
     }
   };
 
   return (
-    <div>
-      <h2 className="  font-bold mt-7 text-3xl text-center w-full ">
-        Add Your Queries
-      </h2>
-      <div className="card shrink-0 w-full">
-        <form onSubmit={handleUpdateContest} className="card-body">
-          <div className="flex flex-col lg:flex-row gap-5">
-            {/* row 1 Contest Name and Photo URL*/}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">Contest Name</span>
-              </label>
-              <input
-                name="contestName"
-                defaultValue={contest.contestName}
-                type="text"
-                placeholder="Contest Name"
-                className="input input-bordered"
-                required
-              />
-            </div>
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Contest Image-URL
-                </span>
-              </label>
-              <input
-                name="contestImage"
-                defaultValue={contest.contestImage}
-                type="text"
-                placeholder="Contest Image-URL"
-                className="input input-bordered"
-                required
-              />
-            </div>
+    <div className="p-2 md:p-6 animate__animated animate__fadeIn">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="p-3 bg-primary/10 text-primary rounded-2xl">
+            <FaEdit size={24} />
           </div>
+          <h2 className="text-3xl font-black text-neutral uppercase tracking-tight">
+            Update <span className="text-primary">Contest</span>
+          </h2>
+        </div>
 
-          <div className="flex flex-col lg:flex-row gap-5">
-            {/* row 2 Contest Price and Price Money */}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">Contest Price</span>
-              </label>
-              <input
-                name="contestPrice"
-                defaultValue={contest.contestPrice}
-                type="number"
-                placeholder="Contest Price"
-                className="input input-bordered"
-                required
-              />
-            </div>
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">Price Money</span>
-              </label>
-              <input
-                name="priceMoney"
-                defaultValue={contest.priceMoney}
-                type="number"
-                placeholder="Price Money"
-                className="input input-bordered"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-5">
-            {/* row 3 Task Instruction & Contest Type */}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Task Instruction
-                </span>
-              </label>
-              <input
-                name="taskInstruction"
-                defaultValue={contest.taskInstruction}
-                type="text"
-                placeholder="Task Instruction"
-                className="input input-bordered"
-                required
-              />
-            </div>
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">Contest Type</span>
-              </label>
-              <select
-                name="contestType"
-                defaultValue={contest.contestType}
-                type="text"
-                className="select select-bordered join-item input "
-                required
-              >
-                <option disabled selected>
-                  Contest Type
-                </option>
-                <option>Article Writing</option>
-                <option>Gaming Review</option>
-                <option>Book Review</option>
-                <option>Business Idea Concerts</option>
-                <option>Movie Review</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex flex-col lg:flex-row gap-5">
-            {/* row 4 Contest Description &  Contest Deadline */}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Contest Description
-                </span>
-              </label>
-              <input
-                name="contestDescription"
-                defaultValue={contest.contestDescription}
-                type="text"
-                placeholder="Contest Description"
-                className="input input-bordered"
-                required
-              />
-            </div>
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Contest DeadLine
-                </span>
-              </label>
-              <div className="input input-bordered relative flex items-center">
-                <DatePicker
-                  name="contestDeadLine"
-                  defaultValue={contest.contestDeadLine}
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
+        {/* Form Card */}
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-neutral/5 border border-gray-100 overflow-hidden">
+          <form
+            onSubmit={handleUpdateContest}
+            className="p-8 md:p-12 space-y-6"
+          >
+            {/* row 1: Name & Image */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Contest Name
+                </label>
+                <input
+                  name="contestName"
+                  defaultValue={contest?.contestName}
+                  type="text"
+                  className="input input-bordered rounded-2xl focus:input-primary"
+                  required
                 />
-                <span className="absolute top-4 right-2">
-                  <FaRegCalendarAlt />
-                </span>
+              </div>
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Contest Image-URL
+                </label>
+                <input
+                  name="contestImage"
+                  defaultValue={contest?.contestImage}
+                  type="text"
+                  className="input input-bordered rounded-2xl focus:input-primary"
+                  required
+                />
               </div>
             </div>
-          </div>
 
-          <div className="form-control mt-6">
-            <input
-              type="submit"
-              className="btn text-white bg-[#2d3142]"
-              value="UPDATE CONTEST"
-            />
-          </div>
-        </form>
+            {/* row 2: Prices */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Contest Fee ($)
+                </label>
+                <input
+                  name="contestPrice"
+                  defaultValue={contest?.contestPrice}
+                  type="number"
+                  className="input input-bordered rounded-2xl focus:input-primary"
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Prize Money ($)
+                </label>
+                <input
+                  name="priceMoney"
+                  defaultValue={contest?.priceMoney}
+                  type="number"
+                  className="input input-bordered rounded-2xl focus:input-primary"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* row 3: Instruction & Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Task Instruction
+                </label>
+                <input
+                  name="taskInstruction"
+                  defaultValue={contest?.taskInstruction}
+                  type="text"
+                  className="input input-bordered rounded-2xl focus:input-primary"
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Contest Type
+                </label>
+                <select
+                  name="contestType"
+                  defaultValue={contest?.contestType}
+                  className="select select-bordered rounded-2xl focus:select-primary font-medium"
+                  required
+                >
+                  <option value="Article Writing">Article Writing</option>
+                  <option value="Gaming Review">Gaming Review</option>
+                  <option value="Book Review">Book Review</option>
+                  <option value="Business Idea Concerts">
+                    Business Idea Concerts
+                  </option>
+                  <option value="Movie Review">Movie Review</option>
+                </select>
+              </div>
+            </div>
+
+            {/* row 4: Description & Deadline */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Description
+                </label>
+                <textarea
+                  name="contestDescription"
+                  defaultValue={contest?.contestDescription}
+                  className="textarea textarea-bordered rounded-2xl focus:textarea-primary h-12"
+                  required
+                ></textarea>
+              </div>
+              <div className="form-control">
+                <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
+                  Deadline
+                </label>
+                <div className="relative">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    className="input input-bordered w-full rounded-2xl focus:input-primary pl-10"
+                    dateFormat="dd/MM/yyyy"
+                    required
+                  />
+                  <FaRegCalendarAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-6">
+              <button
+                type="submit"
+                className="btn btn-primary w-full text-white rounded-2xl shadow-lg shadow-primary/20 h-14"
+              >
+                SAVE UPDATED CONTEST
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

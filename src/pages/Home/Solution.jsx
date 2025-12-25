@@ -3,55 +3,49 @@ import { HiMiniArrowPathRoundedSquare } from "react-icons/hi2";
 import { RiGameFill } from "react-icons/ri";
 
 const Solution = () => {
-  return (
-    <div>
-      <h2 className="text-4xl font-extrabold pt-8 text-center">
-        A complete suite of solutions
-      </h2>
+  const solutions = [
+    {
+      icon: <HiMiniArrowPathRoundedSquare />,
+      title: "Dynamic Path™",
+      desc: "Easily create your tailor-made gaming scenarios. Combine multiple types of games with your interactive content.",
+    },
+    {
+      icon: <BsGiftFill />,
+      title: "Instant Win Games",
+      desc: "Interactive questionnaires to create quizzes, surveys, personality tests, and service recommendation models.",
+    },
+    {
+      icon: <RiGameFill />,
+      title: "Classic Games",
+      desc: "100% customisable popular game concepts to easily create arcade games, reflection games and fun experiences.",
+    },
+  ];
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 md:p-10">
-        <div className="p-5">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-extrabold mx-auto flex justify-center text-sky-500">
-              <HiMiniArrowPathRoundedSquare />
-            </h2>
-            <h2 className="font-extrabold">Dynamic Path™</h2>
-            <p className="font-normal">
-              Easily create your tailor-made gaming scenarios. Combine multiple
-              types of games with your interactive content (videos, images and
-              text). The ultimate experience.
+  return (
+    <div className="py-10">
+      <h2 className="text-4xl md:text-5xl font-black text-center mb-16 text-neutral tracking-tighter uppercase">
+        Complete <span className="text-primary">Solutions</span>
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        {solutions.map((item, idx) => (
+          <div
+            key={idx}
+            className="group p-10 bg-white rounded-[3rem] shadow-xl hover:shadow-primary/10 transition-all border border-transparent hover:border-primary/20 text-center"
+          >
+            <div className="text-6xl text-primary flex justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              {item.icon}
+            </div>
+            <h3 className="text-2xl font-black mb-4 text-neutral">
+              {item.title}
+            </h3>
+            <p className="text-gray-500 leading-relaxed text-sm mb-6">
+              {item.desc}
             </p>
-            <p className="font-normal text-sky-500">Find Out More</p>
+            <button className="text-primary font-bold uppercase tracking-widest text-xs border-b-2 border-primary/20 hover:border-primary pb-1 transition-all">
+              Find Out More
+            </button>
           </div>
-        </div>
-        <div className="p-5">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-extrabold mx-auto flex justify-center text-sky-500">
-              <BsGiftFill />
-            </h2>
-            <h2 className="font-extrabold">Instant Win Games</h2>
-            <p className="font-normal">
-              All forms of interactive questionnaires to create your quizzes,
-              surveys, personality tests, product and service recommendation
-              models, assessments…
-            </p>
-            <p className="font-normal text-sky-500">Find Out More</p>
-          </div>
-        </div>
-        <div className="p-5">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-extrabold mx-auto flex justify-center text-sky-500">
-              <RiGameFill />
-            </h2>
-            <h2 className="font-extrabold">Classic Games</h2>
-            <p className="font-normal">
-              100% customisable popular game concepts to easily create your
-              arcade games, reflection games, competitions and other fun
-              experiences.
-            </p>
-            <p className="font-normal text-sky-500">Find Out More</p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

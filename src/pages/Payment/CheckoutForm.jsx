@@ -6,10 +6,9 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 const CheckoutForm = ({ contest }) => {
-  console.log(contest);
   const {
     contestPrice,
-    email,
+    email: contestCreatorMail,
     contestName,
     priceMoney,
     participantCount,
@@ -17,50 +16,53 @@ const CheckoutForm = ({ contest }) => {
     taskInstruction,
     _id,
   } = contest;
-  const navigate = useNavigate();
 
-  const [error, setError] = useState();
-  const [clientSecret, setClientSecret] = useState("");
-  const [transactionId, setTransactionId] = useState("");
   const stripe = useStripe();
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const price = contestPrice;
+  const navigate = useNavigate();
+
+  const [error, setError] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    axiosSecure.post("/create-payment-intent", { price: price }).then((res) => {
-      console.log(res.data.clientSecret);
-      setClientSecret(res.data.clientSecret);
-    });
-  }, [axiosSecure, price]);
+    if (contestPrice > 0) {
+      axiosSecure
+        .post("/create-payment-intent", { price: contestPrice })
+        .then((res) => {
+          setClientSecret(res.data.clientSecret);
+        })
+        .catch((err) => console.error("Payment Intent Error:", err));
+    }
+  }, [axiosSecure, contestPrice]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!stripe || !elements) {
-      return;
-    }
+    if (!stripe || !elements) return;
+
     const card = elements.getElement(CardElement);
+    if (card === null) return;
 
-    if (card === null) {
+    setProcessing(true);
+
+    const { error: paymentMethodError, paymentMethod } =
+      await stripe.createPaymentMethod({
+        type: "card",
+        card,
+      });
+
+    if (paymentMethodError) {
+      setError(paymentMethodError.message);
+      setProcessing(false);
       return;
-    }
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card,
-    });
-
-    if (error) {
-      console.log("Payment error", error);
-      setError(error.message);
     } else {
-      console.log("Payment Method", paymentMethod);
       setError("");
     }
 
-    // confirm payment
     const { paymentIntent, error: confirmError } =
       await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
@@ -73,85 +75,101 @@ const CheckoutForm = ({ contest }) => {
       });
 
     if (confirmError) {
-      console.log("confirm error");
+      setError(confirmError.message);
+      setProcessing(false);
     } else {
-      console.log("payment intent", paymentIntent);
       if (paymentIntent.status === "succeeded") {
-        console.log("transaction id:", paymentIntent.id);
         setTransactionId(paymentIntent.id);
 
-        //payment info inert collection
         const paymentInfo = {
-          contestCreatorMail: email,
+          contestCreatorMail,
           contestParticipateMail: user?.email,
           transactionId: paymentIntent.id,
           contestId: _id,
-          contestName: contestName,
+          contestName,
           prize: priceMoney,
-          contestType: contestType,
-          taskInstruction: taskInstruction,
+          contestType,
+          taskInstruction,
           amount: contestPrice,
           paidStatus: "paid",
-        };
-        const res = await axiosSecure.post("/payments", paymentInfo);
-        console.log(res.data);
-
-        //participation update
-        const updateParticipate = {
-          participantCount: participantCount + 1,
+          date: new Date(),
         };
 
-        const update = await axiosSecure.patch(
-          `/participation/${_id}`,
-          updateParticipate
-        );
-        if (update.data.modifiedCount > 0) {
-          console.log("payment successfully");
-          // reset();
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Your work has been saved",
-            showConfirmButton: false,
-            timer: 1500,
+        try {
+          const res = await axiosSecure.post("/payments", paymentInfo);
+
+          const updateRes = await axiosSecure.patch(`/participation/${_id}`, {
+            participantCount: participantCount + 1,
           });
+
+          if (updateRes.data.modifiedCount > 0) {
+            Swal.fire({
+              icon: "success",
+              title: "Payment Successful!",
+              text: `Transaction ID: ${paymentIntent.id}`,
+              confirmButtonColor: "#0284c7",
+            });
+            navigate("/dashboard/participatedContest");
+          }
+        } catch (err) {
+          console.error("Database Update Error:", err);
+          setError(
+            "Payment succeeded but database update failed. Contact support."
+          );
         }
-        console.log(update.data);
-        navigate("/dashboard/participatedContest");
       }
+      setProcessing(false);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <CardElement
-          options={{
-            style: {
-              base: {
-                fontSize: "16px",
-                color: "#424770",
-                "::placeholder": {
-                  color: "#aab7c4",
+    <div className="bg-white p-6 rounded-2xl shadow-inner border border-gray-100">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-4 border rounded-xl bg-slate-50">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: "16px",
+                  color: "#1e293b",
+                  "::placeholder": { color: "#94a3b8" },
                 },
+                invalid: { color: "#e11d48" },
               },
-              invalid: {
-                color: "#9e2146",
-              },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
+
         <button
           type="submit"
-          className="btn btn-sm bg-sky-600 text-white my-4"
-          disabled={!stripe || !clientSecret}
+          className={`btn w-full text-white font-bold rounded-xl transition-all ${
+            processing || !stripe || !clientSecret
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-200"
+          }`}
+          disabled={!stripe || !clientSecret || processing}
         >
-          Pay
+          {processing ? (
+            <span className="loading loading-spinner loading-sm"></span>
+          ) : (
+            `Pay $${contestPrice}`
+          )}
         </button>
-        <p className="text-red-600">{error}</p>
+
+        {error && (
+          <p className="text-sm text-red-500 font-medium text-center italic">
+            {error}
+          </p>
+        )}
       </form>
+
       {transactionId && (
-        <p className="text-green-600"> Your transaction id: {transactionId}</p>
+        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <p className="text-green-700 text-xs text-center">
+            Success! Transaction ID:{" "}
+            <span className="font-mono font-bold">{transactionId}</span>
+          </p>
+        </div>
       )}
     </div>
   );

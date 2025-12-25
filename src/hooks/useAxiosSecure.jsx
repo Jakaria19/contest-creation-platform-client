@@ -3,7 +3,7 @@ import useAuth from "./useAuth";
 import { useNavigate } from "react-router-dom";
 
 const axiosSecure = axios.create({
-  baseURL: "https://contest-lab-server.vercel.app",
+  baseURL: "https://contest-creation-platform-server-steel.vercel.app/",
 });
 
 const useAxiosSecure = () => {

@@ -27,7 +27,7 @@ const Update = () => {
       taskInstruction: form.taskInstruction.value,
       contestType: form.contestType.value,
       contestDescription: form.contestDescription.value,
-      contestDeadLine: startDate,
+      contestDeadLine: startDate.toISOString(),
     };
 
     try {

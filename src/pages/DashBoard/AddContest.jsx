@@ -1,42 +1,31 @@
-import { FaRegCalendarAlt } from "react-icons/fa";
+import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 const AddContest = () => {
-  const [startDate, setStartDate] = useState(new Date());
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const [startDate, setStartDate] = useState(new Date());
+  const { register, handleSubmit, reset } = useForm();
 
-  const handleAddContest = async (event) => {
-    event.preventDefault();
-
-    const form = event.target;
-    const contestName = form.contestName.value;
-    const contestImage = form.contestImage.value;
-    const contestPrice = parseInt(form.contestPrice.value);
-    const priceMoney = parseInt(form.priceMoney.value);
-    const taskInstruction = form.taskInstruction.value;
-    const contestType = form.contestType.value;
-    const contestDescription = form.contestDescription.value;
-
-    const contestDeadLine = startDate.toLocaleDateString();
-
+  const onSubmit = async (data) => {
     const newContest = {
-      contestName,
-      contestImage,
-      contestPrice,
-      priceMoney,
-      taskInstruction,
-      contestType,
-      contestDescription,
-      contestDeadLine,
-      name: user?.displayName,
-      email: user?.email,
-      image: user?.photoURL,
+      contestName: data.contestName,
+      contestImage: data.contestImage,
+      contestPrice: parseInt(data.contestPrice),
+      priceMoney: parseInt(data.priceMoney),
+      taskInstruction: data.taskInstruction,
+      contestType: data.contestType,
+      contestDescription: data.contestDescription,
+      contestDeadLine: startDate.toLocaleDateString(),
+      creatorName: user?.displayName,
+      creatorEmail: user?.email,
+      creatorImage: user?.photoURL,
       participantCount: 0,
       status: "pending",
     };
@@ -45,159 +34,116 @@ const AddContest = () => {
       const res = await axiosSecure.post("/contests", newContest);
       if (res.data.insertedId) {
         Swal.fire({
-          position: "center",
           icon: "success",
-          title: "Contest Added Successfully! Wait for Admin approval.",
-          showConfirmButton: false,
+          title: "Success!",
+          text: "Contest Added! Waiting for Admin approval.",
           timer: 2000,
+          showConfirmButton: false,
         });
-        form.reset();
+        reset();
         setStartDate(new Date());
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Oops...",
+        title: "Error",
         text: "Something went wrong!",
       });
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-3xl shadow-sm">
-      <h2 className="text-3xl font-black text-neutral mb-8 text-center uppercase tracking-tight">
-        Add New <span className="text-primary">Contest</span>
+    <div className="max-w-4xl mx-auto p-8 bg-white rounded-[3rem] shadow-sm border border-gray-50">
+      <h2 className="text-3xl font-black text-center uppercase mb-10">
+        Launch New <span className="text-primary">Contest</span>
       </h2>
 
-      <form onSubmit={handleAddContest} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Contest Name */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Contest Name</span>
-            </label>
+            <label className="label font-bold">Contest Name</label>
             <input
-              name="contestName"
-              type="text"
-              placeholder="e.g. Logo Design Master"
-              className="input input-bordered focus:border-primary"
-              required
+              {...register("contestName", { required: true })}
+              className="input input-bordered rounded-2xl"
+              placeholder="Master Logo Design"
             />
           </div>
 
-          {/* Image URL */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Contest Image URL</span>
-            </label>
+            <label className="label font-bold">Contest Image URL</label>
             <input
-              name="contestImage"
-              type="url"
-              placeholder="https://image.path"
-              className="input input-bordered focus:border-primary"
-              required
+              {...register("contestImage", { required: true })}
+              className="input input-bordered rounded-2xl"
+              placeholder="https://..."
             />
           </div>
 
-          {/* Contest Price */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Registration Fee ($)</span>
-            </label>
+            <label className="label font-bold">Entry Fee ($)</label>
             <input
-              name="contestPrice"
               type="number"
-              placeholder="Entry Price"
-              className="input input-bordered focus:border-primary"
-              required
+              {...register("contestPrice", { required: true })}
+              className="input input-bordered rounded-2xl"
             />
           </div>
 
-          {/* Prize Money */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Prize Money ($)</span>
-            </label>
+            <label className="label font-bold">Prize Money ($)</label>
             <input
-              name="priceMoney"
               type="number"
-              placeholder="Winner's Reward"
-              className="input input-bordered focus:border-primary"
-              required
+              {...register("priceMoney", { required: true })}
+              className="input input-bordered rounded-2xl"
             />
           </div>
 
-          {/* Contest Type */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Contest Category</span>
-            </label>
+            <label className="label font-bold">Category</label>
             <select
-              name="contestType"
-              className="select select-bordered focus:border-primary"
-              required
-              defaultValue=""
+              {...register("contestType", { required: true })}
+              className="select select-bordered rounded-2xl"
             >
-              <option value="" disabled>
-                Select Type
-              </option>
-              <option>Article Writing</option>
-              <option>Gaming Review</option>
-              <option>Book Review</option>
-              <option>Business Idea</option>
-              <option>Movie Review</option>
+              <option value="Article Writing">Article Writing</option>
+              <option value="Gaming Review">Gaming Review</option>
+              <option value="Business Idea">Business Idea</option>
+              <option value="Image Design">Image Design</option>
             </select>
           </div>
 
-          {/* Deadline */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text font-bold">Contest Deadline</span>
-            </label>
+            <label className="label font-bold">Deadline</label>
             <div className="relative">
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                className="input input-bordered w-full focus:border-primary"
-                dateFormat="dd/MM/yyyy"
+                className="input input-bordered w-full rounded-2xl"
                 minDate={new Date()}
               />
-              <FaRegCalendarAlt className="absolute right-4 top-4 text-gray-400 pointer-events-none" />
+              <FaRegCalendarAlt className="absolute right-4 top-4 opacity-30" />
             </div>
           </div>
         </div>
 
-        {/* Task Instruction */}
         <div className="form-control">
-          <label className="label">
-            <span className="label-text font-bold">Submission Instruction</span>
-          </label>
+          <label className="label font-bold">Submission Instruction</label>
           <textarea
-            name="taskInstruction"
-            className="textarea textarea-bordered h-24 focus:border-primary"
-            placeholder="Describe what participants should submit..."
-            required
+            {...register("taskInstruction", { required: true })}
+            className="textarea textarea-bordered rounded-2xl h-24"
           ></textarea>
         </div>
 
-        {/* Description */}
         <div className="form-control">
-          <label className="label">
-            <span className="label-text font-bold">Contest Description</span>
-          </label>
+          <label className="label font-bold">Contest Description</label>
           <textarea
-            name="contestDescription"
-            className="textarea textarea-bordered h-24 focus:border-primary"
-            placeholder="Detailed description of the contest..."
-            required
+            {...register("contestDescription", { required: true })}
+            className="textarea textarea-bordered rounded-2xl h-24"
           ></textarea>
         </div>
 
         <button
           type="submit"
-          className="btn btn-primary w-full text-white font-bold text-lg rounded-xl shadow-lg shadow-primary/20"
+          className="btn btn-primary w-full rounded-2xl text-white font-bold text-lg"
         >
-          SUBMIT FOR APPROVAL
+          CREATE CONTEST
         </button>
       </form>
     </div>

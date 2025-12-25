@@ -31,17 +31,18 @@ const Login = () => {
       .then(() => {
         Swal.fire({
           icon: "success",
-          title: "Welcome Back!",
+          title: "Access Granted",
+          text: "Welcome back to WinSphere!",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 2000,
         });
         handleJwtAndNavigate(data.email, from);
       })
       .catch(() => {
         Swal.fire({
           icon: "error",
-          title: "Login Failed",
-          text: "Invalid credentials",
+          title: "Authentication Failed",
+          text: "Check your email or password again.",
         });
       });
   };
@@ -62,62 +63,66 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
-      <div className="max-w-5xl w-full bg-white shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col md:flex-row border border-gray-100">
-        <div className="md:w-1/2 bg-gradient-to-br from-primary to-blue-700 flex flex-col justify-center items-center p-12 text-white">
-          <h2 className="text-5xl font-black mb-6">Welcome!</h2>
-          <p className="text-center text-blue-100 text-lg leading-relaxed opacity-90">
-            Login to your dashboard to manage contests, track rewards and
-            explore new opportunities.
+    <div className="min-h-screen flex items-center justify-center bg-indigo-50/30 px-4 py-20">
+      <div className="max-w-5xl w-full bg-white shadow-2xl rounded-[3rem] overflow-hidden flex flex-col md:flex-row">
+        <div className="md:w-1/2 bg-neutral p-12 text-white flex flex-col justify-center items-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+          <h2 className="text-5xl font-black mb-6 text-center z-10">
+            Welcome <br />
+            <span className="text-indigo-500">Back!</span>
+          </h2>
+          <p className="text-center text-gray-400 text-lg leading-relaxed z-10">
+            Login to access your arena, track your progress, and claim your
+            rewards.
           </p>
         </div>
-        <div className="md:w-1/2 p-10 md:p-16">
-          <div className="mb-10 text-center md:text-left">
-            <h3 className="text-3xl font-black text-neutral">Sign In</h3>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="md:w-1/2 p-10 md:p-20">
+          <h3 className="text-3xl font-black text-neutral mb-8 tracking-tight">
+            Login Account
+          </h3>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="form-control">
-              <label className="label-text font-bold text-gray-600 mb-2">
+              <label className="text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">
                 Email Address
               </label>
               <input
                 type="email"
                 {...register("email", { required: true })}
-                className="input input-bordered focus:input-primary bg-slate-50 border-none h-14"
-                placeholder="name@company.com"
+                className="input bg-slate-50 border-none h-14 rounded-2xl focus:ring-2 ring-indigo-500"
+                placeholder="yourname@winsphere.com"
               />
             </div>
             <div className="form-control">
-              <label className="label-text font-bold text-gray-600 mb-2">
-                Password
+              <label className="text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">
+                Secure Password
               </label>
               <input
                 type="password"
                 {...register("password", { required: true })}
-                className="input input-bordered focus:input-primary bg-slate-50 border-none h-14"
+                className="input bg-slate-50 border-none h-14 rounded-2xl focus:ring-2 ring-indigo-500"
                 placeholder="••••••••"
               />
             </div>
-            <button className="btn btn-primary btn-block text-white h-14 rounded-2xl shadow-lg shadow-primary/30">
-              Sign In Now
+            <button className="btn bg-indigo-600 hover:bg-indigo-700 border-none text-white h-14 rounded-2xl shadow-xl shadow-indigo-100 w-full font-black uppercase tracking-widest">
+              Sign In
             </button>
           </form>
-          <div className="divider my-10 text-gray-300 font-bold text-xs uppercase">
-            Or Continue With
+          <div className="divider my-10 text-[10px] font-black text-gray-300 uppercase">
+            Social Authentication
           </div>
           <button
             onClick={handleGoogleSignIn}
-            className="btn btn-outline btn-block h-14 rounded-2xl gap-3 border-gray-200"
+            className="btn btn-outline btn-block h-14 rounded-2xl gap-3 border-slate-200 hover:bg-slate-50 hover:text-neutral"
           >
-            <FaGoogle className="text-red-500 text-xl" /> Google Account
+            <FaGoogle className="text-red-500" /> Continue with Google
           </button>
-          <p className="text-center mt-10 text-gray-500">
-            New here?{" "}
+          <p className="text-center mt-10 text-gray-500 font-medium">
+            New to WinSphere?{" "}
             <Link
               to="/signUp"
-              className="text-primary font-black hover:underline"
+              className="text-indigo-600 font-black hover:underline"
             >
-              Create Account
+              Register Now
             </Link>
           </p>
         </div>

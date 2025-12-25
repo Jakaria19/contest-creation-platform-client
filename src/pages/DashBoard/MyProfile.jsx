@@ -8,6 +8,7 @@ import {
   FaMapMarkerAlt,
   FaEnvelope,
   FaEdit,
+  FaShieldAlt,
 } from "react-icons/fa";
 
 const MyProfile = () => {
@@ -19,7 +20,7 @@ const MyProfile = () => {
   useEffect(() => {
     if (user?.email) {
       axiosSecure
-        .get(`/usersUser/${user.email}`)
+        .get(`/users/role/${user.email}`)
         .then((response) => {
           setAuthorInfo(response.data);
           setLoading(false);
@@ -29,9 +30,9 @@ const MyProfile = () => {
           setLoading(false);
         });
     }
-  }, [axiosSecure, user]);
+  }, [axiosSecure, user?.email]);
 
-  const handleUpdateProfile = (event) => {
+  const handleUpdateProfile = async (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
@@ -40,124 +41,126 @@ const MyProfile = () => {
 
     const userInfo = { name, photo, address };
 
-    updateUserProfile(name, photo)
-      .then(() => {
-        axiosSecure.patch(`/usersUser/${user.email}`, userInfo).then((res) => {
-          if (res.data.modifiedCount > 0) {
-            setAuthorInfo({ ...authorInfo, ...userInfo });
-            Swal.fire({
-              icon: "success",
-              title: "Profile Updated Successfully!",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
+    try {
+      await updateUserProfile(name, photo);
+      const res = await axiosSecure.patch(`/users/${user.email}`, userInfo);
+
+      if (res.data.modifiedCount > 0 || res.status === 200) {
+        setAuthorInfo({ ...authorInfo, ...userInfo });
+        Swal.fire({
+          icon: "success",
+          title: "WinSphere Profile Updated!",
+          showConfirmButton: false,
+          timer: 1500,
+          confirmButtonColor: "#4f46e5",
         });
-      })
-      .catch((error) => {
-        Swal.fire("Error", "Could not update profile", "error");
-        console.log(error);
-      });
+      }
+    } catch (error) {
+      Swal.fire("Error", "Could not update profile", "error");
+    }
   };
 
   if (loading)
     return (
       <div className="text-center py-20">
-        <span className="loading loading-bars loading-lg text-primary"></span>
+        <span className="loading loading-bars loading-lg text-indigo-600"></span>
       </div>
     );
 
   return (
     <div className="p-2 md:p-6 animate__animated animate__fadeIn">
-      {/* Profile Card */}
-      <div className="bg-white rounded-[2.5rem] shadow-xl shadow-neutral/5 border border-gray-100 overflow-hidden mb-10">
-        <div className="bg-gradient-to-r from-sky-400 to-blue-500 h-32 w-full"></div>
-        <div className="px-8 pb-8 flex flex-col md:flex-row items-center gap-6 -mt-12">
-          <div className="relative">
-            <img
-              src={authorInfo?.photo || "https://i.ibb.co/mJR7z9Y/user.png"}
-              className="w-32 h-32 md:w-40 md:h-40 rounded-3xl object-cover border-4 border-white shadow-lg"
-              alt="Profile"
-            />
+      {/* Header Banner Section */}
+      <div className="bg-white rounded-[3rem] shadow-xl border border-indigo-50 overflow-hidden mb-10">
+        <div className="bg-neutral h-32 w-full relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+          <div className="absolute top-4 right-8 flex items-center gap-2 text-indigo-400 font-black text-[10px] tracking-widest uppercase">
+            <FaShieldAlt /> Verified Athlete
           </div>
-          <div className="text-center md:text-left pt-12 md:pt-14 space-y-1 flex-1">
-            <h2 className="text-3xl font-black text-neutral flex items-center justify-center md:justify-start gap-2">
-              {authorInfo?.name}{" "}
-              <FaUserCircle className="text-primary text-xl" />
+        </div>
+        <div className="px-8 pb-10 flex flex-col md:flex-row items-center gap-8 -mt-16">
+          <img
+            src={
+              authorInfo?.photo ||
+              user?.photoURL ||
+              "https://i.ibb.co/p3d9pYn/user.png"
+            }
+            className="w-40 h-40 rounded-[2.5rem] object-cover border-8 border-white shadow-2xl relative z-10"
+            alt="Profile"
+          />
+          <div className="text-center md:text-left pt-16 flex-1">
+            <h2 className="text-4xl font-black text-neutral flex items-center justify-center md:justify-start gap-3 tracking-tighter">
+              {authorInfo?.name || user?.displayName}
+              <div className="badge badge-indigo bg-indigo-50 text-indigo-600 border-none font-black text-[10px] py-3">
+                PRO
+              </div>
             </h2>
-            <div className="flex flex-wrap justify-center md:justify-start gap-4 text-gray-500 font-medium">
-              <p className="flex items-center gap-1.5">
-                <FaEnvelope className="text-sky-500" /> {authorInfo?.email}
+            <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-2 text-gray-400 font-bold text-sm">
+              <p className="flex items-center gap-2">
+                <FaEnvelope className="text-indigo-600" /> {user?.email}
               </p>
-              <p className="flex items-center gap-1.5">
-                <FaMapMarkerAlt className="text-red-400" />{" "}
-                {authorInfo?.address || "No address set"}
+              <p className="flex items-center gap-2">
+                <FaMapMarkerAlt className="text-red-400" />
+                {authorInfo?.address || "Set location in profile"}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Update Form */}
-      <div className="max-w-2xl mx-auto bg-base-100 p-8 md:p-12 rounded-[2rem] border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-3 mb-8 justify-center">
-          <FaEdit className="text-2xl text-primary" />
+      {/* Edit Form */}
+      <div className="max-w-2xl mx-auto bg-white p-8 md:p-14 rounded-[3rem] border border-indigo-50 shadow-sm">
+        <div className="flex items-center gap-4 mb-10 justify-center">
+          <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-xl">
+            <FaEdit />
+          </div>
           <h2 className="text-2xl font-black text-neutral uppercase tracking-tighter">
-            Update <span className="text-primary">Profile</span>
+            Edit <span className="text-indigo-600">Identity</span>
           </h2>
         </div>
-
-        <form onSubmit={handleUpdateProfile} className="space-y-5">
+        <form onSubmit={handleUpdateProfile} className="space-y-6">
           <div className="form-control">
-            <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
-              Full Name
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-2 mb-2">
+              Full Display Name
             </label>
             <input
               type="text"
               name="name"
-              defaultValue={authorInfo?.name}
-              className="input input-bordered rounded-2xl focus:input-primary transition-all"
-              placeholder="Your name"
+              defaultValue={authorInfo?.name || user?.displayName}
+              className="input bg-slate-50 border-none rounded-2xl h-14 focus:ring-2 ring-indigo-500"
               required
             />
           </div>
-
           <div className="form-control">
-            <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
-              Photo URL
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-2 mb-2">
+              Avatar Source URL
             </label>
             <input
               type="text"
               name="photo"
-              defaultValue={authorInfo?.photo}
-              className="input input-bordered rounded-2xl focus:input-primary transition-all"
-              placeholder="https://image-link.com"
+              defaultValue={authorInfo?.photo || user?.photoURL}
+              className="input bg-slate-50 border-none rounded-2xl h-14 focus:ring-2 ring-indigo-500"
               required
             />
           </div>
-
           <div className="form-control">
-            <label className="label font-bold text-xs uppercase tracking-widest text-gray-400">
-              Home Address
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-2 mb-2">
+              Physical Address
             </label>
             <input
               type="text"
               name="address"
               defaultValue={authorInfo?.address}
-              placeholder="Street, City, Country"
-              className="input input-bordered rounded-2xl focus:input-primary transition-all"
+              className="input bg-slate-50 border-none rounded-2xl h-14 focus:ring-2 ring-indigo-500"
+              placeholder="e.g. Dhaka, Bangladesh"
               required
             />
           </div>
-
-          <div className="pt-4">
-            <button
-              type="submit"
-              className="btn btn-primary w-full text-white rounded-2xl shadow-lg shadow-primary/20"
-            >
-              Save Changes
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="btn bg-indigo-600 hover:bg-indigo-700 w-full text-white rounded-2xl h-14 border-none shadow-xl shadow-indigo-100 font-black uppercase tracking-widest mt-4"
+          >
+            Apply Changes
+          </button>
         </form>
       </div>
     </div>

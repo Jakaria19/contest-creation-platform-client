@@ -23,66 +23,83 @@ const NavBar = () => {
           to="/"
           className={({ isActive }) =>
             isActive
-              ? "text-primary font-bold bg-transparent"
-              : "hover:text-primary transition-colors"
+              ? "text-indigo-600 font-bold bg-transparent"
+              : "hover:text-indigo-600 transition-colors"
           }
         >
           Home
         </NavLink>
       </li>
       <li>
-        <NavLink to="/allContest">All Contests</NavLink>
+        <NavLink
+          to="/allContest"
+          className={({ isActive }) => (isActive ? "text-indigo-600" : "")}
+        >
+          Arena
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/sectors">Sectors</NavLink>
+        <NavLink
+          to="/sectors"
+          className={({ isActive }) => (isActive ? "text-indigo-600" : "")}
+        >
+          Categories
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/services">Services</NavLink>
+        <NavLink
+          to="/services"
+          className={({ isActive }) => (isActive ? "text-indigo-600" : "")}
+        >
+          Solutions
+        </NavLink>
       </li>
     </>
   );
 
   return (
-    <div className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-50 px-4 md:px-12 py-3 border-b border-gray-100">
+    <div className="navbar bg-white/90 backdrop-blur-lg sticky top-0 z-50 px-4 md:px-12 py-3 border-b border-indigo-50">
       <div className="navbar-start">
         <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden text-2xl">
+          <label
+            tabIndex={0}
+            className="btn btn-ghost lg:hidden text-2xl text-indigo-600"
+          >
             <HiMenuAlt1 />
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-50 p-4 shadow-2xl bg-base-100 rounded-2xl w-64 space-y-2"
+            className="menu menu-sm dropdown-content mt-3 z-50 p-4 shadow-2xl bg-base-100 rounded-3xl w-64 space-y-2 border border-indigo-50"
           >
             {navLinks}
           </ul>
         </div>
         <Link
           to="/"
-          className="text-2xl font-black tracking-tighter flex items-center gap-1"
+          className="text-2xl font-black tracking-tighter flex items-center gap-2"
         >
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm italic">
-            C
+          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl font-black shadow-lg shadow-indigo-200">
+            W
           </div>
-          CONTEST<span className="text-primary">LAB</span>
+          <span className="hidden sm:block">
+            WIN<span className="text-indigo-600">SPHERE</span>
+          </span>
         </Link>
       </div>
 
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-6 font-bold text-gray-600 uppercase text-xs tracking-widest">
+        <ul className="menu menu-horizontal px-1 gap-8 font-bold text-gray-500 uppercase text-[11px] tracking-[0.15em]">
           {navLinks}
         </ul>
       </div>
 
-      <div className="navbar-end gap-3">
+      <div className="navbar-end gap-4">
         <div className="flex items-center gap-2 mr-2">
-          <span className="text-[10px] font-bold uppercase opacity-50 hidden sm:block">
-            Theme
-          </span>
           <input
             type="checkbox"
             onChange={handleToggle}
             checked={theme === "dark"}
-            className="toggle toggle-primary toggle-sm"
+            className="toggle toggle-indigo toggle-sm"
           />
         </div>
 
@@ -90,7 +107,7 @@ const NavBar = () => {
           <div className="dropdown dropdown-end">
             <label
               tabIndex={0}
-              className="btn btn-ghost btn-circle avatar border-2 border-primary ring ring-primary ring-offset-2 ring-offset-base-100 ring-opacity-10"
+              className="btn btn-ghost btn-circle avatar ring-2 ring-indigo-600 ring-offset-2"
             >
               <div className="w-10 rounded-full">
                 <img
@@ -101,11 +118,11 @@ const NavBar = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu dropdown-content mt-3 z-50 p-4 shadow-2xl bg-base-100 rounded-2xl w-60 border border-gray-100"
+              className="menu dropdown-content mt-4 z-50 p-5 shadow-2xl bg-base-100 rounded-[2rem] w-64 border border-indigo-50"
             >
-              <div className="px-4 py-3 mb-2 border-b">
-                <p className="text-xs font-black text-primary uppercase">
-                  Logged In As
+              <div className="px-2 pb-4 mb-2 border-b border-slate-100">
+                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                  Active Profile
                 </p>
                 <p className="font-bold text-neutral truncate">
                   {user?.displayName}
@@ -114,31 +131,34 @@ const NavBar = () => {
               <li>
                 <Link
                   to="/dashboard"
-                  className="hover:bg-primary hover:text-white font-bold py-3"
+                  className="hover:bg-indigo-50 hover:text-indigo-600 font-bold py-3 rounded-xl"
                 >
-                  Dashboard
+                  My Dashboard
                 </Link>
               </li>
               <li>
                 <button
                   onClick={() => logOut()}
-                  className="text-error font-bold py-3 mt-2 hover:bg-error/10"
+                  className="text-red-500 font-bold py-3 mt-2 hover:bg-red-50 rounded-xl"
                 >
-                  Sign Out
+                  Logout Account
                 </button>
               </li>
             </ul>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Link to="/login" className="btn btn-ghost btn-sm hidden sm:flex">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="text-sm font-bold text-gray-600 hover:text-indigo-600 hidden sm:block"
+            >
               Login
             </Link>
             <Link
               to="/signUp"
-              className="btn btn-primary btn-sm px-6 rounded-full text-white shadow-lg shadow-primary/20"
+              className="btn bg-indigo-600 hover:bg-indigo-700 btn-sm px-6 rounded-xl text-white border-none shadow-lg shadow-indigo-100"
             >
-              Sign Up
+              Join Now
             </Link>
           </div>
         )}

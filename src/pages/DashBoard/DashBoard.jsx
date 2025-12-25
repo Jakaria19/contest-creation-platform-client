@@ -10,51 +10,54 @@ const DashBoard = () => {
   const [role, isRoleLoading] = useRole();
 
   const linkStyles = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${
+    `flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 font-bold text-sm tracking-tight ${
       isActive
-        ? "bg-primary text-white shadow-lg shadow-primary/30"
-        : "text-white/70 hover:bg-white/10 hover:text-white"
+        ? "bg-indigo-600 text-white shadow-xl shadow-indigo-900/50 scale-105"
+        : "text-gray-400 hover:bg-white/5 hover:text-white"
     }`;
 
   if (isRoleLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-neutral">
-        <span className="loading loading-bars loading-lg text-primary"></span>
+        <span className="loading loading-bars loading-lg text-indigo-500"></span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-base-200">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
       {/* Dashboard Side Bar */}
-      <div className="w-full md:w-80 bg-neutral text-white p-6 shadow-2xl z-10">
-        <div className="mb-10 text-center">
-          <h2 className="text-3xl font-black tracking-tighter text-primary">
-            CONTEST<span className="text-white">HUB</span>
+      <div className="w-full md:w-80 bg-neutral text-white p-8 shadow-2xl z-20">
+        <div className="mb-12 text-left">
+          <h2 className="text-3xl font-black tracking-tighter flex items-center gap-2">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-base">
+              W
+            </div>
+            WIN<span className="text-indigo-600">SPHERE</span>
           </h2>
-          <div className="mt-2 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10">
-            <p className="text-[10px] uppercase tracking-[3px] font-bold text-primary/80">
+          <div className="mt-4 inline-block px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+            <p className="text-[9px] uppercase tracking-[3px] font-black text-indigo-400">
               {role === "admin"
-                ? "Admin Panel"
+                ? "Systems Administrator"
                 : role === "creator"
-                ? "Creator Panel"
-                : "User Dashboard"}
+                ? "Content Creator"
+                : "Arena Participant"}
             </p>
           </div>
         </div>
 
-        <ul className="menu space-y-2 p-0">
+        <ul className="menu space-y-3 p-0">
           {/* --- ADMIN ROUTES --- */}
           {role === "admin" && (
             <>
               <li>
                 <NavLink to="/dashboard/manageUser" className={linkStyles}>
-                  <FaUsers className="text-xl" /> <span>Manage Users</span>
+                  <FaUsers size={18} /> Manage Users
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/manageContest" className={linkStyles}>
-                  <FaBook className="text-xl" /> <span>Manage Contests</span>
+                  <FaBook size={18} /> Manage Contests
                 </NavLink>
               </li>
             </>
@@ -65,14 +68,12 @@ const DashBoard = () => {
             <>
               <li>
                 <NavLink to="/dashboard/addContest" className={linkStyles}>
-                  <MdOutlinePostAdd className="text-xl" />{" "}
-                  <span>Add Contest</span>
+                  <MdOutlinePostAdd size={20} /> Launch Contest
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/createdContest" className={linkStyles}>
-                  <MdOutlinePendingActions className="text-xl" />{" "}
-                  <span>My Created Contests</span>
+                  <MdOutlinePendingActions size={20} /> Active Creations
                 </NavLink>
               </li>
               <li>
@@ -80,8 +81,7 @@ const DashBoard = () => {
                   to="/dashboard/contestSubmitted"
                   className={linkStyles}
                 >
-                  <BsPostcardHeart className="text-xl" />{" "}
-                  <span>Contest Submitted</span>
+                  <BsPostcardHeart size={18} /> Submissions
                 </NavLink>
               </li>
             </>
@@ -92,7 +92,7 @@ const DashBoard = () => {
             <>
               <li>
                 <NavLink to="/dashboard/myProfile" className={linkStyles}>
-                  <FaPortrait className="text-xl" /> <span>My Profile</span>
+                  <FaPortrait size={18} /> Athlete Profile
                 </NavLink>
               </li>
               <li>
@@ -100,33 +100,30 @@ const DashBoard = () => {
                   to="/dashboard/participatedContest"
                   className={linkStyles}
                 >
-                  <FaChalkboardUser className="text-xl" />{" "}
-                  <span>My Participated</span>
+                  <FaChalkboardUser size={18} /> History
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/winningContest" className={linkStyles}>
-                  <GiPodiumWinner className="text-xl" />{" "}
-                  <span>My Winning Contests</span>
+                  <GiPodiumWinner size={18} /> Hall of Fame
                 </NavLink>
               </li>
             </>
           )}
 
-          {/* Shared Nav Links */}
-          <div className="divider before:bg-white/5 after:bg-white/5 my-8 opacity-50"></div>
+          <div className="divider before:bg-white/5 after:bg-white/5 my-10 opacity-20"></div>
 
           <li>
             <NavLink to="/" className={linkStyles}>
-              <FaHome className="text-xl" /> <span>Back to Home</span>
+              <FaHome size={18} /> Exit to Arena
             </NavLink>
           </li>
         </ul>
       </div>
 
       {/* Dashboard Content Area */}
-      <div className="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-screen">
-        <div className="bg-white rounded-[2.5rem] min-h-full shadow-xl shadow-neutral/5 p-6 md:p-10 border border-gray-100">
+      <div className="flex-1 p-4 md:p-10 lg:p-16 h-screen overflow-y-auto">
+        <div className="bg-white rounded-[3.5rem] min-h-full shadow-2xl shadow-indigo-100/50 p-8 md:p-12 border border-indigo-50">
           <Outlet />
         </div>
       </div>

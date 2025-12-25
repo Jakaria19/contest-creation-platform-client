@@ -10,7 +10,7 @@ import Update from "../pages/DashBoard/Update";
 import PrivateRoute from "./PrivateRoute";
 import AllContest from "../pages/AllContest/AllContest";
 import ContestDetails from "../pages/ContestDetails/ContestDetails";
-import ManegeUser from "../pages/DashBoard/ManegeUser";
+import ManageUser from "../pages/DashBoard/ManageUser";
 import ManageContest from "../pages/DashBoard/ManageContest";
 import ContestSubmitted from "../pages/DashBoard/ContestSubmitted";
 import MyProfile from "../pages/DashBoard/MyProfile";
@@ -23,7 +23,7 @@ import Sectors from "../pages/Sectors/Sectors";
 import Service from "../pages/Service/Service";
 import AdminRoute from "./AdminRoute";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
-
+import Leaderboard from "../pages/Leaderboard/Leaderboard";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -36,6 +36,7 @@ export const router = createBrowserRouter([
       { path: "allContest", element: <AllContest /> },
       { path: "sectors", element: <Sectors /> },
       { path: "services", element: <Service /> },
+      { path: "leaderboard", element: <Leaderboard /> }, // Challenge Task requirement
       {
         path: "contestDetails/:id",
         element: (
@@ -66,7 +67,10 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      // Common Routes
       { path: "myProfile", element: <MyProfile /> },
+
+      // Creator Routes
       { path: "addContest", element: <AddContest /> },
       { path: "createdContest", element: <CreateContest /> },
       {
@@ -76,13 +80,6 @@ export const router = createBrowserRouter([
           fetch(`${import.meta.env.VITE_API_URL}/contest/${params.id}`),
       },
       { path: "contestSubmitted", element: <ContestSubmitted /> },
-      { path: "participatedContest", element: <MyParticipation /> },
-      {
-        path: "participatedContest/submit/:id",
-        element: <SubmitContests />,
-        loader: ({ params }) =>
-          fetch(`${import.meta.env.VITE_API_URL}/paymentSingle/${params.id}`),
-      },
       {
         path: "contestSubmitted/showSubmission/:contestId",
         element: <ShowSubmission />,
@@ -91,13 +88,23 @@ export const router = createBrowserRouter([
             `${import.meta.env.VITE_API_URL}/paymentSubmit/${params.contestId}`
           ),
       },
+
+      // User Routes
+      { path: "participatedContest", element: <MyParticipation /> },
+      {
+        path: "participatedContest/submit/:id",
+        element: <SubmitContests />,
+        loader: ({ params }) =>
+          fetch(`${import.meta.env.VITE_API_URL}/paymentSingle/${params.id}`),
+      },
       { path: "winningContest", element: <WinningContest /> },
 
+      // Admin Routes
       {
         path: "manageUser",
         element: (
           <AdminRoute>
-            <ManegeUser />
+            <ManageUser />
           </AdminRoute>
         ),
       },
